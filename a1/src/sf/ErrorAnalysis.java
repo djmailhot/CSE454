@@ -9,7 +9,7 @@ import util.FileUtil;
 
 public class ErrorAnalysis {
 	public static void main(String[] args) {
-		getLabels("per:date_of_birth");
+		getLabels("per:country_of_death");
 	}
 	/**
 	 * print out all the correct answers for the slot

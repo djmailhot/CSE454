@@ -11,7 +11,7 @@ import tackbp.KbEntity.EntityType;
 
 /**
  * Needs "tokens", "meta",
- * @author xiaoling
+ * @author djmailhot
  *
  */
 public class RegexPerCountryOfDeathFiller extends Filler {
@@ -47,19 +47,19 @@ public class RegexPerCountryOfDeathFiller extends Filler {
 			last = first;
 		}
 
+		String matchVerbDied = "(died|was laid to rest|passed away)";
+		String matchNounLocation = "([A-Z][a-z]+)";
+
 		// Three patterns are used here beginning with the full name, the first name and the last name respectively.  
-		Pattern patternFullName = Pattern.compile(mention.mentionString
-				+ " was born (in|on) (.+?)\\p{Punct}");
+		Pattern patternOnlyCountry = Pattern.compile(mention.mentionString
+				+ " " + matchVerbDied + " in.+?" + matchNounLocation);
 
-		Pattern patternFirstName = Pattern.compile(first
-				+ " was born (in|on) (.+?)\\p{Punct}");
-
-		Pattern patternLastName = Pattern.compile(last
-				+ " was born (in|on) (.+?)\\p{Punct}");
+		Pattern patternCityCountry = Pattern.compile(first
+				+ " " + matchVerbDied + " in.+?" + matchNounLocation + ", " + matchNounLocation);
 
 		{
 			// apply the pattern using the full name
-			Matcher matcher = patternFullName.matcher(tokens);
+			Matcher matcher = patternOnlyCountry.matcher(tokens);
 			if (matcher.find()) {
 				SFEntity.SingleAnswer ans = new SFEntity.SingleAnswer();
 				ans.answer = matcher.group(2).trim();
@@ -69,20 +69,10 @@ public class RegexPerCountryOfDeathFiller extends Filler {
 		}
 		{
 			// apply the pattern using the first name
-			Matcher matcher = patternFirstName.matcher(tokens);
+			Matcher matcher = patternCityCountry.matcher(tokens);
 			if (matcher.find()) {
 				SFEntity.SingleAnswer ans = new SFEntity.SingleAnswer();
-				ans.answer = matcher.group(2).trim();
-				ans.doc = filename;
-				mention.answers.put(slotName, ans);
-			}
-		}
-		{
-			// apply the pattern using the last name
-			Matcher matcher = patternLastName.matcher(tokens);
-			if (matcher.find()) {
-				SFEntity.SingleAnswer ans = new SFEntity.SingleAnswer();
-				ans.answer = matcher.group(2).trim();
+				ans.answer = matcher.group(3).trim();
 				ans.doc = filename;
 				mention.answers.put(slotName, ans);
 			}
